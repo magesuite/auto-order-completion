@@ -1,0 +1,10 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <autocompletion>
+            <settings>
+                <auto_invoicing_enabled>0</auto_invoicing_enabled>
+                <auto_shipment_enabled>0</auto_shipment_enabled>
+            </settings>
+        </autocompletion>
+    </default>
+</config>
