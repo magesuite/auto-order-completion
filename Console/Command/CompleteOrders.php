@@ -5,68 +5,29 @@ namespace MageSuite\AutoOrderCompletion\Console\Command;
 class CompleteOrders extends \Symfony\Component\Console\Command\Command
 {
     /**
-     * @var \Magento\Framework\App\State
+     * @var \MageSuite\AutoOrderCompletion\Service\OrderProcessor
      */
-    private $state;
+    protected $orderProcessor;
 
     /**
-     * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
+     * @param \MageSuite\AutoOrderCompletion\Service\OrderProcessor $orderProcessor
      */
-    private $ordersCollectionFactory;
-    /**
-     * @var \MageSuite\AutoOrderCompletion\Service\InvoiceCreatorFactory
-     */
-    private $invoiceCreatorFactory;
-    /**
-     * @var \MageSuite\AutoOrderCompletion\Service\ShipmentCreatorFactory
-     */
-    private $shipmentCreatorFactory;
-
-    /**
-     * ImportFile constructor.
-     * @param \Magento\Framework\ObjectManagerInterface $objectManager
-     * @param \Magento\Framework\App\State $state
-     */
-    public function __construct(
-        \Magento\Framework\App\State $state,
-        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $ordersCollectionFactory,
-        \MageSuite\AutoOrderCompletion\Service\InvoiceCreatorFactory $invoiceCreatorFactory,
-        \MageSuite\AutoOrderCompletion\Service\ShipmentCreatorFactory $shipmentCreatorFactory
-    )
+    public function __construct(\MageSuite\AutoOrderCompletion\Service\OrderProcessor $orderProcessor)
     {
         parent::__construct();
-
-        $this->state = $state;
-        $this->ordersCollectionFactory = $ordersCollectionFactory;
-
-        $this->invoiceCreatorFactory = $invoiceCreatorFactory;
-        $this->shipmentCreatorFactory = $shipmentCreatorFactory;
+        $this->orderProcessor = $orderProcessor;
     }
 
     protected function configure()
     {
-        $this
-            ->setName('order:complete')
+        $this->setName('order:complete')
             ->setDescription('Automatically complete all orders by creating invoices and shipments');
     }
 
     protected function execute(
         \Symfony\Component\Console\Input\InputInterface $input,
         \Symfony\Component\Console\Output\OutputInterface $output
-    )
-    {
-        $ordersCollection = $this->ordersCollectionFactory->create();
-        $invoiceCreator = $this->invoiceCreatorFactory->create();
-        $shipmentCreator = $this->shipmentCreatorFactory->create();
-
-        /** @var \Magento\Sales\Model\Order $order */
-        foreach ($ordersCollection as $order) {
-            if ($order->getStatus() == \Magento\Sales\Model\Order::STATE_COMPLETE) {
-                continue;
-            }
-
-            $invoiceCreator->createInvoice($order);
-            $shipmentCreator->createShipment($order);
-        }
+    ) {
+        $this->orderProcessor->execute();
     }
 }

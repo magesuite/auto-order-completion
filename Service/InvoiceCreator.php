@@ -4,54 +4,43 @@ namespace MageSuite\AutoOrderCompletion\Service;
 
 class InvoiceCreator
 {
-
     /**
      * @var \Magento\Sales\Api\InvoiceManagementInterface
      */
-    private $invoiceManagement;
+    protected $invoiceManagement;
 
     /**
      * @var \Magento\Framework\DB\TransactionFactory
      */
-    private $transactionFactory;
+    protected $transactionFactory;
 
     /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
+     * @var \MageSuite\AutoOrderCompletion\Helper\Configuration
      */
-    private $orderRepositoryInterface;
+    protected $configuration;
 
     /**
-     * @var \MageSuite\AutoOrderCompletion\Helper\Config
+     * @param \Magento\Sales\Api\InvoiceManagementInterface $invoiceManagement
+     * @param \Magento\Framework\DB\TransactionFactory $transactionFactory
+     * @param \MageSuite\AutoOrderCompletion\Helper\Configuration $configuration
      */
-    private $configHelper;
-
     public function __construct(
-        \Magento\Sales\Api\OrderRepositoryInterface $orderRepositoryInterface,
         \Magento\Sales\Api\InvoiceManagementInterface $invoiceManagement,
         \Magento\Framework\DB\TransactionFactory $transactionFactory,
-        \MageSuite\AutoOrderCompletion\Helper\Config $configHelper
-    )
-    {
+        \MageSuite\AutoOrderCompletion\Helper\Configuration $configuration
+    ) {
         $this->invoiceManagement = $invoiceManagement;
         $this->transactionFactory = $transactionFactory;
-        $this->orderRepositoryInterface = $orderRepositoryInterface;
-        $this->configHelper = $configHelper;
+        $this->configuration = $configuration;
     }
 
-    public function createInvoice(\Magento\Sales\Model\Order $order)
+    public function execute(\Magento\Sales\Model\Order $order)
     {
-        if (!$this->configHelper->isAutoInvoicingEnabled()) {
+        if (!$this->configuration->isAutoInvoicingEnabled($order->getStoreId())) {
             return;
         }
 
-        /** @var \Magento\Sales\Model\Order $order */
-        $order = $this->orderRepositoryInterface->get($order->getId());
-
-        if (!$order->getPayment()) {
-            return;
-        }
-
-        if (!$order->canInvoice()) {
+        if (!$order->getPayment() || !$order->canInvoice()) {
             return;
         }
 
@@ -61,12 +50,10 @@ class InvoiceCreator
         $order->setIsInProcess(true);
 
         $transaction = $this->transactionFactory->create();
-
-        $transaction
-            ->addObject($order)
+        $transaction->addObject($order)
             ->addObject($invoice)
             ->save();
 
-        $order->addStatusHistoryComment('Order was automatically invoiced', false);
+        $order->addCommentToStatusHistory('Order was automatically invoiced');
     }
 }

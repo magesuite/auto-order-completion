@@ -2,22 +2,28 @@
 
 namespace MageSuite\AutoOrderCompletion\Test\Integration\Observer;
 
-class AutoCompleteAfterOrderSaveTest extends \PHPUnit\Framework\TestCase
+class OrderProcessorTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @var \MageSuite\AutoOrderCompletion\Service\OrderProcessor
+     */
+    protected $orderProcessor;
+
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
-    private $orderFactory;
+    protected $orderFactory;
 
     /**
      * @var \Magento\TestFramework\ObjectManager
      */
-    private $objectManager;
+    protected $objectManager;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->objectManager = \Magento\TestFramework\ObjectManager::getInstance();
         $this->orderFactory = $this->objectManager->get(\Magento\Sales\Model\OrderFactory::class);
+        $this->orderProcessor = $this->objectManager->get(\MageSuite\AutoOrderCompletion\Service\OrderProcessor::class);
     }
 
     /**
@@ -29,17 +35,11 @@ class AutoCompleteAfterOrderSaveTest extends \PHPUnit\Framework\TestCase
      */
     public function testItCompletesOrderAutomaticallyOnOrderSave()
     {
+        $this->orderProcessor->execute();
         /** @var \Magento\Sales\Model\Order $order */
         $order = $this->orderFactory->create();
         $order->loadByIncrementId('100000001');
 
-        $order->setCustomerEmail('customer1@null.com');
-        $order->save();
-
-        $order = $this->orderFactory->create();
-        $order->loadByIncrementId('100000001');
-
-        /** @var \Magento\Sales\Model\Order $order */
         $this->assertEquals(1, $order->hasInvoices());
         $this->assertEquals(1, $order->hasShipments());
         $this->assertEquals(\Magento\Sales\Model\Order::STATE_COMPLETE, $order->getStatus());
@@ -54,17 +54,11 @@ class AutoCompleteAfterOrderSaveTest extends \PHPUnit\Framework\TestCase
      */
     public function testOrderIsNotCompletedAutomaticallyWhenAutoInvoicingAndShippmentAreDisabled()
     {
+        $this->orderProcessor->execute();
         /** @var \Magento\Sales\Model\Order $order */
         $order = $this->orderFactory->create();
         $order->loadByIncrementId('100000001');
 
-        $order->setCustomerEmail('customer1@null.com');
-        $order->save();
-
-        $order = $this->orderFactory->create();
-        $order->loadByIncrementId('100000001');
-
-        /** @var \Magento\Sales\Model\Order $order */
         $this->assertEquals(0, $order->hasInvoices());
         $this->assertEquals(0, $order->hasShipments());
         $this->assertEquals(\Magento\Sales\Model\Order::STATE_PROCESSING, $order->getStatus());

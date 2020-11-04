@@ -9,11 +9,11 @@
             <resource>MageSuite_AutoOrderCompletion::config_autoinvoice</resource>
             <group id="settings" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Auto Order Completion</label>
-                <field id="auto_invoicing_enabled" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="auto_invoicing_enabled" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable auto invoicing</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="auto_shipment_enabled" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="auto_shipment_enabled" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable auto shipping</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>

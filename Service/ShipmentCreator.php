@@ -4,58 +4,43 @@ namespace MageSuite\AutoOrderCompletion\Service;
 
 class ShipmentCreator
 {
-
     /**
      * @var \Magento\Sales\Model\Order\ShipmentFactory
      */
-    private $shipmentFactory;
+    protected $shipmentFactory;
 
     /**
      * @var \Magento\Framework\DB\TransactionFactory
      */
-    private $transactionFactory;
+    protected $transactionFactory;
 
     /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
+     * @var \MageSuite\AutoOrderCompletion\Helper\Configuration
      */
-    private $orderRepositoryInterface;
-
-    /**
-     * @var \MageSuite\AutoOrderCompletion\Helper\Config
-     */
-    private $configHelper;
+    protected $configuration;
 
     public function __construct(
-        \Magento\Sales\Api\OrderRepositoryInterface $orderRepositoryInterface,
         \Magento\Sales\Model\Order\ShipmentFactory $shipmentFactory,
         \Magento\Framework\DB\TransactionFactory $transactionFactory,
-        \MageSuite\AutoOrderCompletion\Helper\Config $configHelper
-    )
-    {
+        \MageSuite\AutoOrderCompletion\Helper\Configuration $configuration
+    ) {
         $this->shipmentFactory = $shipmentFactory;
         $this->transactionFactory = $transactionFactory;
-        $this->orderRepositoryInterface = $orderRepositoryInterface;
-        $this->configHelper = $configHelper;
+        $this->configuration = $configuration;
     }
 
-    public function createShipment(\Magento\Sales\Model\Order $order)
+    public function execute(\Magento\Sales\Model\Order $order)
     {
-        if (!$this->configHelper->isAutoShippingEnabled()) {
+        if (!$this->configuration->isAutoShippingEnabled($order->getStoreId())) {
             return;
         }
 
-        /** @var \Magento\Sales\Model\Order $order */
-        $order = $this->orderRepositoryInterface->get($order->getId());
-
-        if (!$order->canShip()) {
-            return;
-        }
-
-        if ($order->hasShipments()) {
+        if (!$order->canShip() || $order->hasShipments()) {
             return;
         }
 
         $items = [];
+
         foreach ($order->getItems() as $item) {
             $items[$item->getId()] = $item->getQtyOrdered();
         }
@@ -64,12 +49,10 @@ class ShipmentCreator
         $shipment->register();
 
         $transaction = $this->transactionFactory->create();
-
-        $transaction
-            ->addObject($shipment)
+        $transaction->addObject($shipment)
             ->addObject($order)
             ->save();
 
-        $order->addStatusHistoryComment('Order was automatically shipped', false);
+        $order->addCommentToStatusHistory('Order was automatically shipped');
     }
 }
