@@ -4,23 +4,22 @@ namespace MageSuite\AutoOrderCompletion\Test\Integration\Service;
 
 class InvoiceCreatorTest extends \PHPUnit\Framework\TestCase
 {
-
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
-    private $orderFactory;
+    protected $orderFactory;
 
     /**
      * @var \MageSuite\AutoOrderCompletion\Service\InvoiceCreator
      */
-    private $invoiceCreator;
+    protected $invoiceCreator;
 
     /**
      * @var \Magento\TestFramework\ObjectManager
      */
-    private $objectManager;
+    protected $objectManager;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->objectManager = \Magento\TestFramework\ObjectManager::getInstance();
         $this->invoiceCreator = $this->objectManager->get(\MageSuite\AutoOrderCompletion\Service\InvoiceCreator::class);
@@ -42,7 +41,7 @@ class InvoiceCreatorTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(0, $order->hasInvoices());
 
-        $this->invoiceCreator->createInvoice($order);
+        $this->invoiceCreator->execute($order);
 
         $order = $this->orderFactory->create();
         $order->loadByIncrementId('100000001');
@@ -65,7 +64,7 @@ class InvoiceCreatorTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(1, $order->hasInvoices());
 
-        $this->invoiceCreator->createInvoice($order);
+        $this->invoiceCreator->execute($order);
 
         $order = $this->orderFactory->create();
         $order->loadByIncrementId('100000001');

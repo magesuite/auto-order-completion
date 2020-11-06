@@ -4,23 +4,22 @@ namespace MageSuite\AutoOrderCompletion\Test\Integration\Service;
 
 class ShipmentCreatorTest extends \PHPUnit\Framework\TestCase
 {
-
     /**
      * @var \Magento\Sales\Model\OrderFactory
      */
-    private $orderFactory;
+    protected $orderFactory;
 
     /**
      * @var \MageSuite\AutoOrderCompletion\Service\ShipmentCreator
      */
-    private $shipmentCreator;
+    protected $shipmentCreator;
 
     /**
      * @var \Magento\TestFramework\ObjectManager
      */
-    private $objectManager;
+    protected $objectManager;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->objectManager = \Magento\TestFramework\ObjectManager::getInstance();
         $this->shipmentCreator = $this->objectManager->get(\MageSuite\AutoOrderCompletion\Service\ShipmentCreator::class);
@@ -42,7 +41,7 @@ class ShipmentCreatorTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(0, $order->hasShipments());
 
-        $this->shipmentCreator->createShipment($order);
+        $this->shipmentCreator->execute($order);
 
         $order = $this->orderFactory->create();
         $order->loadByIncrementId('100000001');
@@ -65,7 +64,7 @@ class ShipmentCreatorTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(1, $order->hasShipments());
 
-        $this->shipmentCreator->createShipment($order);
+        $this->shipmentCreator->execute($order);
 
         $order = $this->orderFactory->create();
         $order->loadByIncrementId('100000001');
