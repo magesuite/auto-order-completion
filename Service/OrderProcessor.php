@@ -47,7 +47,7 @@ class OrderProcessor
         $this->logger = $logger;
     }
 
-    public function execute()
+    public function completeOrders()
     {
         $collection = $this->getCollection();
         $lastPage = $collection->getSize();

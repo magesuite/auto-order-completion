@@ -28,6 +28,6 @@ class CompleteOrders extends \Symfony\Component\Console\Command\Command
         \Symfony\Component\Console\Input\InputInterface $input,
         \Symfony\Component\Console\Output\OutputInterface $output
     ) {
-        $this->orderProcessor->execute();
+        $this->orderProcessor->completeOrders();
     }
 }

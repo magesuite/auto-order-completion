@@ -35,7 +35,7 @@ class OrderProcessorTest extends \PHPUnit\Framework\TestCase
      */
     public function testItCompletesOrderAutomaticallyOnOrderSave()
     {
-        $this->orderProcessor->execute();
+        $this->orderProcessor->completeOrders();
         /** @var \Magento\Sales\Model\Order $order */
         $order = $this->orderFactory->create();
         $order->loadByIncrementId('100000001');
@@ -54,7 +54,7 @@ class OrderProcessorTest extends \PHPUnit\Framework\TestCase
      */
     public function testOrderIsNotCompletedAutomaticallyWhenAutoInvoicingAndShippmentAreDisabled()
     {
-        $this->orderProcessor->execute();
+        $this->orderProcessor->completeOrders();
         /** @var \Magento\Sales\Model\Order $order */
         $order = $this->orderFactory->create();
         $order->loadByIncrementId('100000001');

@@ -2,7 +2,7 @@
 
 namespace MageSuite\AutoOrderCompletion\Cron;
 
-class ProcessPendingOrders
+class CompletePendingOrders
 {
     /**
      * @var \MageSuite\AutoOrderCompletion\Service\OrderProcessor
@@ -19,6 +19,6 @@ class ProcessPendingOrders
 
     public function execute()
     {
-        $this->orderProcessor->addGreaterThanDaysFilter(7)->execute();
+        $this->orderProcessor->addGreaterThanDaysFilter(7)->completeOrders();
     }
 }
