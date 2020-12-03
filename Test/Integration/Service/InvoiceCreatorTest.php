@@ -29,8 +29,8 @@ class InvoiceCreatorTest extends \PHPUnit\Framework\TestCase
     /**
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
-     * @magentoAdminConfigFixture autocompletion/settings/auto_invoicing_enabled 1
-     * @magentoAdminConfigFixture autocompletion/settings/auto_shipment_enabled 1
+     * @magentoConfigFixture current_store autocompletion/settings/auto_invoicing_enabled 1
+     * @magentoConfigFixture current_store autocompletion/settings/auto_shipment_enabled 1
      * @magentoDataFixture Magento/Sales/_files/order.php
      */
     public function testItCreatesInvoice()
@@ -52,8 +52,8 @@ class InvoiceCreatorTest extends \PHPUnit\Framework\TestCase
     /**
      * @magentoAppIsolation enabled
      * @magentoDbIsolation enabled
-     * @magentoAdminConfigFixture autocompletion/settings/auto_invoicing_enabled 1
-     * @magentoAdminConfigFixture autocompletion/settings/auto_shipment_enabled 1
+     * @magentoConfigFixture current_store autocompletion/settings/auto_invoicing_enabled 1
+     * @magentoConfigFixture current_store autocompletion/settings/auto_shipment_enabled 1
      * @magentoDataFixture Magento/Sales/_files/invoice.php
      */
     public function testItDoesNotCreateInvoiceWhenThereIsOneAlready()
