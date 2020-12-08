@@ -53,8 +53,10 @@ class ShipmentCreator
         }
 
         $shipment->register();
-        $shipment->getOrder()->setIsInProcess(true);
         $shipment->save();
-        $shipment->getOrder()->addCommentToStatusHistory('Order was automatically shipped')->save();
+
+        $order->setIsInProcess(true);
+        $order->addCommentToStatusHistory('Order was automatically shipped');
+        $order->save();
     }
 }
