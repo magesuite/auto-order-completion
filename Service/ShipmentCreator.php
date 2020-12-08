@@ -5,14 +5,14 @@ namespace MageSuite\AutoOrderCompletion\Service;
 class ShipmentCreator
 {
     /**
+     * @var \Magento\Sales\Model\Convert\OrderFactory
+     */
+    protected $convertOrderFactory;
+
+    /**
      * @var \Magento\Sales\Model\Order\ShipmentFactory
      */
     protected $shipmentFactory;
-
-    /**
-     * @var \Magento\Framework\DB\TransactionFactory
-     */
-    protected $transactionFactory;
 
     /**
      * @var \MageSuite\AutoOrderCompletion\Helper\Configuration
@@ -20,12 +20,12 @@ class ShipmentCreator
     protected $configuration;
 
     public function __construct(
+        \Magento\Sales\Model\Convert\OrderFactory $convertOrderFactory,
         \Magento\Sales\Model\Order\ShipmentFactory $shipmentFactory,
-        \Magento\Framework\DB\TransactionFactory $transactionFactory,
         \MageSuite\AutoOrderCompletion\Helper\Configuration $configuration
     ) {
+        $this->convertOrderFactory = $convertOrderFactory;
         $this->shipmentFactory = $shipmentFactory;
-        $this->transactionFactory = $transactionFactory;
         $this->configuration = $configuration;
     }
 
@@ -39,20 +39,22 @@ class ShipmentCreator
             return;
         }
 
-        $items = [];
+        $convertOrder = $this->convertOrderFactory->create();
+        $shipment = $convertOrder->toShipment($order);
 
-        foreach ($order->getItems() as $item) {
-            $items[$item->getId()] = $item->getQtyOrdered();
+        foreach ($order->getAllItems() as $orderItem) {
+            if (!$orderItem->getQtyToShip() || $orderItem->getIsVirtual()) {
+                continue;
+            }
+
+            $qtyShipped = $orderItem->getQtyToShip();
+            $shipmentItem = $convertOrder->itemToShipmentItem($orderItem)->setQty($qtyShipped);
+            $shipment->addItem($shipmentItem);
         }
 
-        $shipment = $this->shipmentFactory->create($order, $items);
         $shipment->register();
-
-        $transaction = $this->transactionFactory->create();
-        $transaction->addObject($shipment)
-            ->addObject($order)
-            ->save();
-
-        $order->addCommentToStatusHistory('Order was automatically shipped');
+        $shipment->getOrder()->setIsInProcess(true);
+        $shipment->save();
+        $shipment->getOrder()->addCommentToStatusHistory('Order was automatically shipped')->save();
     }
 }

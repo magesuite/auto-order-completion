@@ -48,12 +48,11 @@ class InvoiceCreator
         $invoice->register();
 
         $order->setIsInProcess(true);
+        $order->addCommentToStatusHistory('Order was automatically invoiced');
 
         $transaction = $this->transactionFactory->create();
         $transaction->addObject($order)
             ->addObject($invoice)
             ->save();
-
-        $order->addCommentToStatusHistory('Order was automatically invoiced');
     }
 }
