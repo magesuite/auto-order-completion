@@ -94,7 +94,6 @@ class OrderProcessor
         $collection->addAttributeToFilter(
             'main_table.state',
             ['nin' => [
-                \Magento\Sales\Model\Order::STATE_COMPLETE,
                 \Magento\Sales\Model\Order::STATE_CLOSED,
                 \Magento\Sales\Model\Order::STATE_CANCELED
             ]]
