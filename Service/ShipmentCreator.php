@@ -5,11 +5,6 @@ namespace MageSuite\AutoOrderCompletion\Service;
 class ShipmentCreator
 {
     /**
-     * @var \Magento\Sales\Model\Convert\OrderFactory
-     */
-    protected $convertOrderFactory;
-
-    /**
      * @var \Magento\Sales\Model\Order\ShipmentFactory
      */
     protected $shipmentFactory;
@@ -20,11 +15,9 @@ class ShipmentCreator
     protected $configuration;
 
     public function __construct(
-        \Magento\Sales\Model\Convert\OrderFactory $convertOrderFactory,
         \Magento\Sales\Model\Order\ShipmentFactory $shipmentFactory,
         \MageSuite\AutoOrderCompletion\Helper\Configuration $configuration
     ) {
-        $this->convertOrderFactory = $convertOrderFactory;
         $this->shipmentFactory = $shipmentFactory;
         $this->configuration = $configuration;
     }
@@ -39,19 +32,17 @@ class ShipmentCreator
             return;
         }
 
-        $convertOrder = $this->convertOrderFactory->create();
-        $shipment = $convertOrder->toShipment($order);
+        $items = [];
 
         foreach ($order->getAllItems() as $orderItem) {
             if (!$orderItem->getQtyToShip() || $orderItem->getIsVirtual()) {
                 continue;
             }
 
-            $qtyShipped = $orderItem->getQtyToShip();
-            $shipmentItem = $convertOrder->itemToShipmentItem($orderItem)->setQty($qtyShipped);
-            $shipment->addItem($shipmentItem);
+            $items[$orderItem->getId()] = $orderItem->getQtyToShip();
         }
 
+        $shipment = $this->shipmentFactory->create($order, $items);
         $shipment->register();
         $shipment->save();
 
