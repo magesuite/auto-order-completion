@@ -108,7 +108,8 @@ class OrderProcessor
                 ['ssh' => $collection->getTable('sales_shipment')],
                 'ssh.order_id = main_table.entity_id',
                 []
-            )->where(implode(' OR ', $conditions));
+            )->where(implode(' OR ', $conditions)
+            )->group('main_table.entity_id');
 
         if ($this->greaterThanDaysFilter > 0) {
             $modify = sprintf('-%d days', $this->greaterThanDaysFilter);
