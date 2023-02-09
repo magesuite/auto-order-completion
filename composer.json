@@ -1,6 +1,6 @@
 {
   "name": "creativestyle/magesuite-auto-order-completion",
-  "description": "Auto Order Completion Extension",
+  "description": "The module adds the possibility to enable auto invoicing and auto shipping for orders.",
   "type": "magento2-module",
   "homepage": "https://creativestyle.de",
   "license": "OSL-3.0",
