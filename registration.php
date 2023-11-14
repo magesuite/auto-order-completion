@@ -4,4 +4,3 @@
     'MageSuite_AutoOrderCompletion',
     __DIR__
 );
-
