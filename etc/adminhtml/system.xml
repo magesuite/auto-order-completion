@@ -17,6 +17,7 @@
                     <label>Enable auto shipping</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <fieldset_css>cs-csfeature__logo</fieldset_css>
             </group>
         </section>
     </system>
