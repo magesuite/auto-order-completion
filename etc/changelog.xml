@@ -2,7 +2,7 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:MageSuite_Changelog:etc/changelog.xsd">
     <module id="MageSuite_AutoOrderCompletion" name="MageSuite_AutoOrderCompletion">
         <changelog>
-            <tag version="1.0.10" date="2023-03-23">
+            <tag version="1.2.1" date="2023-11-16">
                 <entry>
                     <type>CHORE</type>
                     <overview>Add missing MGS-icon and changelog</overview>
